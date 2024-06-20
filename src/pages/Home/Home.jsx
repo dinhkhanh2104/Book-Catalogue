@@ -3,10 +3,11 @@ import { useEffect, useState } from "react";
 import { db } from "../../firebase";
 import { collection, getDocs } from "firebase/firestore";
 import BookCard from "../../components/BookCard";
-import styles from "../../styles/home.module.scss";
+import Header from "../../components/Header";
+
 function Home() {
   const [filter, setFilter] = useState("publicationYear");
-  const [books, setBooks] = useState([]);
+  const [books, setBooks] = useState([]); 
   const [recommend, setRecommend] = useState();
 
   const handleSelectChange = (value) => {
@@ -141,86 +142,94 @@ function Home() {
   // console.log(recommend.img);
 
   return (
-    <Row>
-      <Col span={24}>
-        <Row className="flex justify-center">
-          <Col span={20}>
-            <Card>
+    <>
+      <Header name={'Book Catalouge'} />
+      <Row>
+        <Col span={24}>
+          <Row className="flex justify-center">
+            <Col span={20}>
               <Card>
-                <p className="font-semibold text-lg">Recommend book</p>
-                <Row className="mt-8">
-                  <Col span={12} className="flex justify-center">
-                    <div className="w-[200px]">
-                      <img src={recommend?.img} alt="recommend book" />
-                    </div>
-                  </Col>
-                  <Col span={12} className="flex items-center overflow-hidden">
-                    <div className="flex flex-col gap-5 text-xl font-semibold">
-                      <span className=" text-3xl mb-3">{recommend?.name}</span>
-                      <span className="">
-                        Author:{"  "}
-                        <span className="text-[#007185]">
-                          {recommend?.author.join(" ,")}
+                <Card>
+                  <p className="font-semibold text-lg">Recommend book</p>
+                  <Row className="mt-8">
+                    <Col span={12} className="flex justify-center">
+                      <div className="w-[200px]">
+                        <img src={recommend?.img} alt="recommend book" />
+                      </div>
+                    </Col>
+                    <Col
+                      span={12}
+                      className="flex items-center overflow-hidden"
+                    >
+                      <div className="flex flex-col gap-5 text-xl font-semibold">
+                        <span className=" text-3xl mb-3">
+                          {recommend?.name}
                         </span>
-                      </span>
-                      {recommend?.publicationYear ? (
-                        <span>
-                          Publication year:{"  "}
-                          <span className="text-[#565959]">
-                            {recommend.publicationYear}
+                        <span className="">
+                          Author:{"  "}
+                          <span className="text-[#007185]">
+                            {recommend?.author.join(" ,")}
                           </span>
                         </span>
-                      ) : (
-                        <span>Publication Year: Updating...</span>
-                      )}
-                      {recommend?.rating ? (
-                        <span>
-                          Rating:{"  "}
-                          <span className="text-[#ffa41c]">
-                            {recommend.rating}
+                        {recommend?.publicationYear ? (
+                          <span>
+                            Publication year:{"  "}
+                            <span className="text-[#565959]">
+                              {recommend.publicationYear}
+                            </span>
                           </span>
-                        </span>
-                      ) : (
-                        <span>Rating: Updating...</span>
-                      )}
-                    </div>
-                  </Col>
-                </Row>
-              </Card>
+                        ) : (
+                          <span>Publication Year: Updating...</span>
+                        )}
+                        {recommend?.rating ? (
+                          <span>
+                            Rating:{"  "}
+                            <span className="text-[#ffa41c]">
+                              {recommend.rating}
+                            </span>
+                          </span>
+                        ) : (
+                          <span>Rating: Updating...</span>
+                        )}
+                      </div>
+                    </Col>
+                  </Row>
+                </Card>
 
-              <Card>
-                <div className="flex gap-3 justify-end">
-                  <label className="flex items-center">Group by</label>
-                  <Select
-                    onChange={handleSelectChange}
-                    value={filter}
-                    style={{
-                      width: 180,
-                    }}
-                    options={[
-                      {
-                        value: "publicationYear",
-                        label: "Publication Year",
-                      },
-                      {
-                        value: "rating",
-                        label: "Rating",
-                      },
-                      {
-                        value: "author",
-                        label: "Author",
-                      },
-                    ]}
-                  />
-                </div>
+                <Card>
+                  <div className="flex gap-3 justify-end">
+                    <label className="flex items-center">Group by</label>
+                    <Select
+                      onChange={handleSelectChange}
+                      value={filter}
+                      style={{
+                        width: 180,
+                      }}
+                      options={[
+                        {
+                          value: "publicationYear",
+                          label: "Publication Year",
+                        },
+                        {
+                          value: "rating",
+                          label: "Rating",
+                        },
+                        {
+                          value: "author",
+                          label: "Author",
+                        },
+                      ]}
+                    />
+                  </div>
 
-                {renderBooks()}
+                  {renderBooks()}
+                </Card>
               </Card>
-            </Card>
-          </Col>
-        </Row>
-      </Col>
-    </Row>
+            </Col>
+          </Row>
+        </Col>
+      </Row>
+    </>
   );
 }
 

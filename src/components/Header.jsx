@@ -1,10 +1,10 @@
 import { Typography, Row } from "antd";
 import React from "react";
-function Header() {
+function Header({ name }) {
   const { Title } = Typography;
   return (
     <Row className="flex justify-center">
-      <Title level={3}>Book Catalogue</Title>
+      <Title level={3}>{name}</Title>
     </Row>
   );
 }
