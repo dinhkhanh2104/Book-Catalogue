@@ -12,7 +12,7 @@ import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { Link } from "react-router-dom";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-
+import { message } from "antd";
 import {
   doSignInWithEmailAndPassword,
   doSignInWithGoogle,
@@ -24,32 +24,44 @@ import { Navigate } from "react-router-dom";
 const defaultTheme = createTheme();
 
 export default function SignIn() {
-  const { userLoggedIn } = useAuth();
+  const { isAuthenticated } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isSigningIn, setIsSigningIn] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!isSigningIn) {
       setIsSigningIn(true);
-      await doSignInWithEmailAndPassword(email, password);
+      try {
+        await doSignInWithEmailAndPassword(email, password);
+        setIsSigningIn(false);
+        message.success("Sign in successfully");
+      } catch (error) {
+        message.error("Invalid email or password");
+        setIsSigningIn(false);
+      }
     }
   };
-  const handleGoogleSignIn = (e) => {
+  
+  const handleGoogleSignIn = async (e) => {
     e.preventDefault();
     if (!isSigningIn) {
       setIsSigningIn(true);
-      doSignInWithGoogle().catch((err) => {
+      try {
+        await doSignInWithGoogle();
         setIsSigningIn(false);
-      });
+        message.success("Sign in successfully");
+      } catch (error) {
+        message.error(error.message);
+        setIsSigningIn(false);
+      }
     }
   };
 
   return (
     <>
-      {userLoggedIn && <Navigate to={"/user"} replace={true} />}
+      {isAuthenticated && <Navigate to={"/user"} replace={true} />}
 
       <ThemeProvider theme={defaultTheme}>
         <Container component="main" maxWidth="xs">
@@ -79,6 +91,7 @@ export default function SignIn() {
                 required
                 fullWidth
                 id="email"
+                type="email"
                 label="Email Address"
                 name="email"
                 value={email}
@@ -106,9 +119,6 @@ export default function SignIn() {
                 control={<Checkbox value="remember" color="primary" />}
                 label="Remember"
               />
-              {errorMessage && (
-                <span className="text-red-600 font-bold">{errorMessage}</span>
-              )}
               <Button
                 type="submit"
                 className={`w-full px-4 py-2 text-white font-medium rounded-lg ${
@@ -127,8 +137,8 @@ export default function SignIn() {
                 onClick={(e) => {
                   handleGoogleSignIn(e);
                 }}
-                className="w-full flex items-center justify-center gap-x-3 py-2.5 border rounded-lg text-sm font-medium  
-                  hover:bg-gray-100 transition duration-300 active:bg-gray-100"
+                className="w-full my-4 flex items-center justify-center gap-x-3 py-2.5 border rounded-lg text-sm font-medium  
+                  hover:bg-gray-100 transition duration-300 active:bg-gray-100 uppercase"
               >
                 <svg
                   className="w-5 h-5"
@@ -160,13 +170,13 @@ export default function SignIn() {
                     </clipPath>
                   </defs>
                 </svg>
-                {isSigningIn ? "Signing In..." : "Continue with Google"}
+                {isSigningIn ? "Signing In..." : "Continue With Google"}
               </button>
               <Grid container>
                 <Grid item xs>
                   <Link
                     className="text-[#1976d2] text-sm leading-3 "
-                    href="#"
+                    to="/"
                     variant="body2"
                   >
                     Forgot password ?

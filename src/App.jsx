@@ -1,29 +1,38 @@
 import Home from "./pages/Home/Home";
 import NotFound from "./pages/NotFound/NotFound";
-import Header from "./components/Header";
 import SignIn from "./pages/SignIn/SignIn";
 import SignUp from "./pages/SignUp/SignUp";
 import User from "./pages/User/User";
-
 import { AuthProvider } from "./contexts/authContext";
-import { RouterProvider } from "react-router-dom";
+import { useRoutes, BrowserRouter } from "react-router-dom";
+import PrivateRoute from "./PrivateRoot";
 import "./styles/global.css";
 
-function App() {
+function AppRoutes() {
   const routesArray = [
     { path: "/", element: <Home /> },
     { path: "/signin", element: <SignIn /> },
     { path: "/signup", element: <SignUp /> },
-    { path: "/user", element: <User /> },
+    {
+      path: "/user",
+      element: (
+        <PrivateRoute>
+          <User />
+        </PrivateRoute>
+      ),
+    },
     { path: "*", element: <NotFound /> },
   ];
 
-  let routesElement = useRoutes(routesArray);
+  return useRoutes(routesArray);
+}
 
+function App() {
   return (
     <AuthProvider>
-      <Header />
-      {routesElement}
+      <BrowserRouter>
+        <AppRoutes />
+      </BrowserRouter>
     </AuthProvider>
   );
 }

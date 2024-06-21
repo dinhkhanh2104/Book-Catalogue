@@ -40,41 +40,6 @@ const User = () => {
     { label: "Image URL", name: "img", placeholder: "Image URL" },
   ];
 
-  const showAddModal = () => {
-    setSelectedBook(null);
-    setBookFields({
-      name: "",
-      author: "",
-      publicationYear: null,
-      rating: null,
-      isbn: "",
-      img: "",
-    });
-    setIsAdding(true);
-    setIsModalOpen(true);
-  };
-  const showEditModal = (book) => {
-    setSelectedBook(book);
-    setBookFields({
-      name: book.name,
-      author: book.author.join(", "),
-      publicationYear: book.publicationYear,
-      rating: book.rating,
-      isbn: book.isbn,
-      img: book.img,
-    });
-    setIsModalOpen(true);
-  };
-  const showDeleteModal = (bookId) => {
-    Modal.confirm({
-      title: "Are you sure you want to delete this book?",
-      content: "This action cannot be undone.",
-      okText: "Yes",
-      okType: "danger",
-      cancelText: "No",
-      onOk: () => handleDelete(bookId),
-    });
-  };
   const validateName = (book) => {
     if (book.name.length > 100)
       return {
@@ -83,6 +48,7 @@ const User = () => {
       };
     return { valid: true };
   };
+
   const validateAuthor = (book) => {
     const tmp = [""];
     if (JSON.stringify(book.author) == JSON.stringify(tmp))
@@ -92,6 +58,7 @@ const User = () => {
       };
     else return { valid: true };
   };
+
   const validatePublicationYear = (book) => {
     if (book.publicationYear <= 1800)
       return {
@@ -100,6 +67,7 @@ const User = () => {
       };
     return { valid: true };
   };
+
   const validateRating = (book) => {
     console.log(typeof book.rating);
     if (Number.isInteger(book.rating) && book.rating <= 10 && book.rating >= 0)
@@ -110,6 +78,7 @@ const User = () => {
         message: "Rating must be an integer between 0 and 10",
       };
   };
+
   const validateISBN = (book) => {
     const False = {
       valid: false,
@@ -128,6 +97,7 @@ const User = () => {
     if (sum % 11 == 0) return { valid: true };
     else return False;
   };
+
   const validate = (book) => {
     const validators = [
       validateName,
@@ -136,6 +106,7 @@ const User = () => {
       validateRating,
       validateISBN,
     ];
+
     for (let validator of validators) {
       const result = validator(book);
       if (!result.valid) {
@@ -146,13 +117,51 @@ const User = () => {
     return true;
   };
 
+  const showAddModal = () => {
+    setSelectedBook(null);
+    setBookFields({
+      name: "",
+      author: "",
+      publicationYear: null,
+      rating: null,
+      isbn: "",
+      img: "",
+    });
+    setIsAdding(true);
+    setIsModalOpen(true);
+  };
+
+  const showEditModal = (book) => {
+    setSelectedBook(book);
+    setBookFields({
+      name: book.name,
+      author: book.author.join(", "),
+      publicationYear: book.publicationYear,
+      rating: book.rating,
+      isbn: book.isbn,
+      img: book.img,
+    });
+    setIsModalOpen(true);
+  };
+
+  const showDeleteModal = (bookId) => {
+    Modal.confirm({
+      title: "Are you sure you want to delete this book?",
+      content: "This action cannot be undone.",
+      okText: "Yes",
+      okType: "danger",
+      cancelText: "No",
+      onOk: () => handleDelete(bookId),
+    });
+  };
+
   const handleOk = async () => {
     const bookValidate = {
       name: bookFields.name,
       author: bookFields.author.split(", ").map((a) => a.trim()),
       publicationYear: Number(bookFields.publicationYear),
       rating: Number(bookFields.rating),
-      isbn: bookFields.isbn,
+      isbn: bookFields.isbn.split("-").join(""),
       img: bookFields.img,
     };
     if (!validate(bookValidate)) return;
@@ -163,7 +172,7 @@ const User = () => {
         message.success("Book added successfully");
         setIsModalOpen(false);
         setIsAdding(false);
-        fetchBooks(); // Re-fetch books to update the list
+        fetchBooks();
       } catch (error) {
         message.error("Failed to add book");
         console.error("Error adding book: ", error);
@@ -175,7 +184,7 @@ const User = () => {
         message.success("Book updated successfully");
         setIsModalOpen(false);
         setSelectedBook(null);
-        fetchBooks(); // Re-fetch books to update the list
+        fetchBooks();
       } catch (error) {
         message.error("Failed to update book");
         console.error("Error updating book: ", error);
@@ -188,16 +197,18 @@ const User = () => {
     setSelectedBook(null);
     setIsAdding(false);
   };
+
   const handleDelete = async (bookId) => {
     try {
       await deleteDoc(doc(db, "books", bookId));
       message.success("Book deleted successfully");
-      fetchBooks(); // Re-fetch books to update the list
+      fetchBooks();
     } catch (error) {
       message.error("Failed to delete book");
       console.error("Error deleting book: ", error);
     }
   };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setBookFields({
@@ -230,7 +241,7 @@ const User = () => {
 
   return (
     <>
-      <Header name={"Book Catalogue User"} />
+      <Header />
       <Row>
         <Col span={24}>
           <Row className="mb-5 justify-center">
@@ -240,6 +251,7 @@ const User = () => {
                   Add book
                 </Button>
               </div>
+
               {books.map((book) => (
                 <Card key={book.id} className="mt-4">
                   <div className="flex justify-between items-center">
@@ -267,6 +279,7 @@ const User = () => {
           </Row>
         </Col>
       </Row>
+
       <Modal
         title={isAdding ? "Add Book" : "Edit Book"}
         open={isModalOpen}
@@ -292,6 +305,7 @@ const User = () => {
                 />
               </div>
             ))}
+
             {bookFields.img && (
               <div className="flex justify-center mb-2">
                 <img

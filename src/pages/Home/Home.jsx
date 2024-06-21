@@ -143,7 +143,7 @@ function Home() {
 
   return (
     <>
-      {/* <Header name={"Book Catalouge"} /> */}
+      <Header name={"Book Catalouge"} pos={"Home"} />
       <Row>
         <Col span={24}>
           <Row className="flex justify-center">
