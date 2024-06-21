@@ -1,13 +1,13 @@
 import { Col, Row, Card, Select } from "antd";
 import { useEffect, useState } from "react";
-import { db } from "../../firebase";
+import { db } from "../../firebase/firebase";
 import { collection, getDocs } from "firebase/firestore";
 import BookCard from "../../components/BookCard";
 import Header from "../../components/Header";
 
 function Home() {
   const [filter, setFilter] = useState("publicationYear");
-  const [books, setBooks] = useState([]); 
+  const [books, setBooks] = useState([]);
   const [recommend, setRecommend] = useState();
 
   const handleSelectChange = (value) => {
@@ -143,7 +143,7 @@ function Home() {
 
   return (
     <>
-      <Header name={'Book Catalouge'} />
+      {/* <Header name={"Book Catalouge"} /> */}
       <Row>
         <Col span={24}>
           <Row className="flex justify-center">

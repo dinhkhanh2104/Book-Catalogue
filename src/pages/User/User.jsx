@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Header from "../../components/Header";
 import { Row, Col, Card, Button, Modal, Input, message } from "antd";
-import { db } from "../../firebase";
+import { db } from "../../firebase/firebase";
 import {
   collection,
   getDocs,
@@ -21,8 +21,8 @@ const User = () => {
   const [bookFields, setBookFields] = useState({
     name: "",
     author: "",
-    publicationYear: "",
-    rating: "",
+    publicationYear: null,
+    rating: null,
     isbn: "",
     img: "",
   });
@@ -45,8 +45,8 @@ const User = () => {
     setBookFields({
       name: "",
       author: "",
-      publicationYear: "",
-      rating: "",
+      publicationYear: null,
+      rating: null,
       isbn: "",
       img: "",
     });
@@ -75,18 +75,91 @@ const User = () => {
       onOk: () => handleDelete(bookId),
     });
   };
+  const validateName = (book) => {
+    if (book.name.length > 100)
+      return {
+        valid: false,
+        message: "Book name must be less than 100 characters.",
+      };
+    return { valid: true };
+  };
+  const validateAuthor = (book) => {
+    const tmp = [""];
+    if (JSON.stringify(book.author) == JSON.stringify(tmp))
+      return {
+        valid: false,
+        message: "Book must has at least 1 author.",
+      };
+    else return { valid: true };
+  };
+  const validatePublicationYear = (book) => {
+    if (book.publicationYear <= 1800)
+      return {
+        valid: false,
+        message: "The publication year must greater than 1800",
+      };
+    return { valid: true };
+  };
+  const validateRating = (book) => {
+    console.log(typeof book.rating);
+    if (Number.isInteger(book.rating) && book.rating <= 10 && book.rating >= 0)
+      return { valid: true };
+    else
+      return {
+        valid: false,
+        message: "Rating must be an integer between 0 and 10",
+      };
+  };
+  const validateISBN = (book) => {
+    const False = {
+      valid: false,
+      message: "ISBN is not valid",
+    };
+    if (book.isbn.length != 10) return False;
+    let sum = 0;
+    for (let i = 0; i < 9; i++) {
+      let digit = book.isbn[i] - "0";
+      if (digit < 0 || digit > 9) return False;
+      sum += digit * (10 - i);
+    }
+    let lastDegit = book.isbn[9];
+    if (lastDegit != "X" && (lastDegit < "0" || lastDegit > "9")) return False;
+    sum += lastDegit == "X" ? 10 : lastDegit - "0";
+    if (sum % 11 == 0) return { valid: true };
+    else return False;
+  };
+  const validate = (book) => {
+    const validators = [
+      validateName,
+      validateAuthor,
+      validatePublicationYear,
+      validateRating,
+      validateISBN,
+    ];
+    for (let validator of validators) {
+      const result = validator(book);
+      if (!result.valid) {
+        message.error(result.message);
+        return false;
+      }
+    }
+    return true;
+  };
+
   const handleOk = async () => {
+    const bookValidate = {
+      name: bookFields.name,
+      author: bookFields.author.split(", ").map((a) => a.trim()),
+      publicationYear: Number(bookFields.publicationYear),
+      rating: Number(bookFields.rating),
+      isbn: bookFields.isbn,
+      img: bookFields.img,
+    };
+    if (!validate(bookValidate)) return;
+
     if (isAdding) {
       try {
-        // validate here
-        await addDoc(collection(db, "books"), {
-          name: bookFields.name,
-          author: bookFields.author.split(", ").map((a) => a.trim()),
-          publicationYear: bookFields.publicationYear,
-          rating: bookFields.rating,
-          isbn: bookFields.isbn,
-          img: bookFields.img,
-        });
+        await addDoc(collection(db, "books"), bookValidate);
         message.success("Book added successfully");
         setIsModalOpen(false);
         setIsAdding(false);
@@ -98,14 +171,7 @@ const User = () => {
     } else if (selectedBook) {
       try {
         const bookRef = doc(db, "books", selectedBook.id);
-        await updateDoc(bookRef, {
-          name: bookFields.name,
-          author: bookFields.author.split(", ").map((a) => a.trim()),
-          publicationYear: bookFields.publicationYear,
-          rating: bookFields.rating,
-          isbn: bookFields.isbn,
-          img: bookFields.img,
-        });
+        await updateDoc(bookRef, bookValidate);
         message.success("Book updated successfully");
         setIsModalOpen(false);
         setSelectedBook(null);
@@ -167,11 +233,13 @@ const User = () => {
       <Header name={"Book Catalogue User"} />
       <Row>
         <Col span={24}>
-          <Row justify="center">
+          <Row className="mb-5 justify-center">
             <Col span={12}>
-              <Button type="primary" className="mt-4" onClick={showAddModal}>
-                Thêm sách
-              </Button>
+              <div className="flex justify-end">
+                <Button type="primary" className="mt-4" onClick={showAddModal}>
+                  Add book
+                </Button>
+              </div>
               {books.map((book) => (
                 <Card key={book.id} className="mt-4">
                   <div className="flex justify-between items-center">

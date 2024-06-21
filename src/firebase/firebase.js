@@ -1,9 +1,7 @@
 
 import { initializeApp } from "firebase/app";
-// import { getAnalytics } from "firebase/analytics";
+import { getAuth } from "firebase/auth"
 import {
-    collection,
-    getDocs,
     getFirestore
 } from "firebase/firestore"
 
@@ -23,5 +21,6 @@ const app = initializeApp(firebaseConfig);
 
 // init services
 export const db = getFirestore()
+export const auth = getAuth(app)
 
 

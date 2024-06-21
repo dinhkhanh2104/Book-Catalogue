@@ -40,7 +40,7 @@ export default function SignUp() {
             <AccountCircleIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
-            Đăng ký
+            Sign Up
           </Typography>
           <Box
             component="form"
@@ -51,23 +51,24 @@ export default function SignUp() {
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
                 <TextField
-                  required
-                  fullWidth
-                  id="lastName"
-                  label="Họ"
-                  name="lastName"
-                  autoComplete="family-name"
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
                   autoComplete="given-name"
                   name="firstName"
                   required
                   fullWidth
                   id="firstName"
-                  label="Tên"
+                  label="First Name"
                   autoFocus
+                />
+              </Grid>
+
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  required
+                  fullWidth
+                  id="lastName"
+                  label="Last Name"
+                  name="lastName"
+                  autoComplete="family-name"
                 />
               </Grid>
               <Grid item xs={12}>
@@ -75,7 +76,7 @@ export default function SignUp() {
                   required
                   fullWidth
                   id="email"
-                  label="Email"
+                  label="Email Address"
                   name="email"
                   autoComplete="email"
                 />
@@ -85,7 +86,7 @@ export default function SignUp() {
                   required
                   fullWidth
                   name="password"
-                  label="Mật khẩu"
+                  label="Password"
                   type="password"
                   id="password"
                   autoComplete="new-password"
@@ -98,7 +99,7 @@ export default function SignUp() {
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
             >
-              Đăng ký
+              Sign Up
             </Button>
             <Grid container justifyContent="flex-end">
               <Grid item>
@@ -107,7 +108,7 @@ export default function SignUp() {
                   className="text-[#1976d2] text-sm leading-3 "
                   variant="body2"
                 >
-                  Đăng nhập ngay
+                  Have acount? Sign In
                 </Link>
               </Grid>
             </Grid>
