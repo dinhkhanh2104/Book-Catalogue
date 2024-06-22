@@ -84,18 +84,39 @@ const User = () => {
       valid: false,
       message: "ISBN is not valid",
     };
-    if (book.isbn.length != 10) return False;
-    let sum = 0;
-    for (let i = 0; i < 9; i++) {
-      let digit = book.isbn[i] - "0";
-      if (digit < 0 || digit > 9) return False;
-      sum += digit * (10 - i);
+
+    const isbn = book.isbn.replace(/[-\s]/g, "");
+
+    if (isbn.length === 10) {
+      // check ISBN-10
+      let sum = 0;
+      for (let i = 0; i < 9; i++) {
+        let digit = isbn[i] - "0";
+        if (digit < 0 || digit > 9) return False;
+        sum += digit * (10 - i);
+      }
+      let lastDigit = isbn[9];
+      if (lastDigit != "X" && (lastDigit < "0" || lastDigit > "9"))
+        return False;
+      sum += lastDigit == "X" ? 10 : lastDigit - "0";
+      if (sum % 11 == 0) return { valid: true };
+      else return False;
+    } else if (isbn.length === 13) {
+      // check ISBN-13
+      let sum = 0;
+      for (let i = 0; i < 12; i++) {
+        let digit = isbn[i] - "0";
+        if (digit < 0 || digit > 9) return False;
+        sum += digit * (i % 2 === 0 ? 1 : 3);
+      }
+      let checkDigit = isbn[12] - "0";
+      if (checkDigit < 0 || checkDigit > 9) return False;
+      sum += checkDigit;
+      if (sum % 10 == 0) return { valid: true };
+      else return False;
+    } else {
+      return False;
     }
-    let lastDegit = book.isbn[9];
-    if (lastDegit != "X" && (lastDegit < "0" || lastDegit > "9")) return False;
-    sum += lastDegit == "X" ? 10 : lastDegit - "0";
-    if (sum % 11 == 0) return { valid: true };
-    else return False;
   };
 
   const validate = (book) => {
