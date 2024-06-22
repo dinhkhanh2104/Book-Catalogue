@@ -40,4 +40,10 @@ After clone code successfully, use this command to install essential packages:
 npm install
 ```
 
-### Run code
+### Step 2: Run code
+
+Use this command to run code:
+
+```shell
+npm start
+```
